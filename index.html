@@ -6,9 +6,12 @@
     <style>
         .wrapper{
             display: flex;
-            width: 200px;
+            width: 500px;
             margin: 100px auto;
             flex-direction: column;
+        }
+        input{
+            height: 30px;
         }
 
     </style>
@@ -16,7 +19,7 @@
 <body>
 <div class="wrapper">
     <label for="one">one</label>
-<input type="number" id="one">
+    <input type="number" id="one">
     <label for="two">two</label>
 
     <input type="number" id="two">
@@ -53,28 +56,26 @@
         const per = 8
         let result = 0
         let arr = []
+        var minArrList = []
         getMinArr(list)
-        let minArrGroup = []
-        let filteredArrGroup = []
         function getMinArr (arr) {
             let min = Math.min.apply(null, arr) // 找到数组里的最小值
             let minArr = []
             let filteredArr = []
-            arr.map(i => {
+            arr.forEach(i => {
                 minArr = new Array(arr.length).fill(min)
-                return filteredArr.push(i-min)
+                filteredArr.push(i-min)
             })
             filteredArr = filter(filteredArr)
             if (filteredArr.length > 1) {
+                // getMinArr(filteredArr)
                 arguments.callee(filteredArr)
+            } else if (filteredArr.length === 1) {
+                minArrList.push(filteredArr)
             }
-            // console.log(minArr)
-            minArrGroup.push(minArr)
-            console.log(minArrGroup)
-            filteredArrGroup.push(filteredArr)
-            console.log(filteredArrGroup)
-            // return filteredArr
+            minArrList.push(minArr)
         }
+        console.log("minArrList: ",minArrList)
         // 当length 小于5的情况
         function sum(list) {
            return list.reduce((accumulator, currentValue) => accumulator + currentValue)
