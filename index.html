@@ -43,7 +43,6 @@
         let three = document.getElementById('three').value
         let four = document.getElementById('four').value
         let five = document.getElementById('five').value
-        // let reslutValue = document.getElementById('result').value
         let list = []
         list.push(~~one,~~two,~~three,~~four,~~five)
         function filter (arr) {
@@ -55,6 +54,8 @@
         let result = 0
         let arr = []
         getMinArr(list)
+        let minArrGroup = []
+        let filteredArrGroup = []
         function getMinArr (arr) {
             let min = Math.min.apply(null, arr) // 找到数组里的最小值
             let minArr = []
@@ -64,8 +65,14 @@
                 return filteredArr.push(i-min)
             })
             filteredArr = filter(filteredArr)
-            console.log(minArr)
-            console.log(filteredArr)
+            if (filteredArr.length > 1) {
+                arguments.callee(filteredArr)
+            }
+            // console.log(minArr)
+            minArrGroup.push(minArr)
+            console.log(minArrGroup)
+            filteredArrGroup.push(filteredArr)
+            console.log(filteredArrGroup)
             // return filteredArr
         }
         // 当length 小于5的情况
