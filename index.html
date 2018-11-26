@@ -43,27 +43,55 @@
         let three = document.getElementById('three').value
         let four = document.getElementById('four').value
         let five = document.getElementById('five').value
+        // let reslutValue = document.getElementById('result').value
         let list = []
         list.push(~~one,~~two,~~three,~~four,~~five)
         function filter (arr) {
-            return arr.filter(item => item>0)
+            return arr.filter(item => item>0).sort() // 排序和除0
         }
         filter(list)
         list = filter(list)
         const per = 8
         let result = 0
         let arr = []
-        let min = Math.min.apply(null, list) // 找到数组里的最小值
-        getMinArr()
-        function getMinArr () {
+        getMinArr(list)
+        function getMinArr (arr) {
+            let min = Math.min.apply(null, arr) // 找到数组里的最小值
             let minArr = []
-            list.map(i => {
-                return minArr.push(i-min)
+            let filteredArr = []
+            arr.map(i => {
+                minArr = new Array(arr.length).fill(min)
+                return filteredArr.push(i-min)
             })
-            minArr = filter(minArr)
+            filteredArr = filter(filteredArr)
             console.log(minArr)
-            return minArr
+            console.log(filteredArr)
+            // return filteredArr
         }
+        // 当length 小于5的情况
+        function sum(list) {
+           return list.reduce((accumulator, currentValue) => accumulator + currentValue)
+        }
+        let sales
+        switch (list.length) {
+            case 0:
+                sales = 0
+                break
+            case 1:
+                sales= 1
+                break
+            case 2:
+                sales = 0.95
+                break
+            case 3:
+                sales = 0.9
+                break
+            case 4:
+                sales = 0.8
+                break
+        }
+        result = (sum(list) * per * sales).toFixed(2)
+        document.getElementById('result').value = result
     }
 </script>
 </html>
