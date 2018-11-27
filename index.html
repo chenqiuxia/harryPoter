@@ -4,34 +4,34 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        .wrapper{
+        .wrapper {
             display: flex;
             width: 500px;
             margin: 100px auto;
             flex-direction: column;
         }
-        input{
+
+        button {
             height: 30px;
         }
-
     </style>
 </head>
 <body>
 <div class="wrapper">
     <label for="one">one</label>
-    <input type="number" id="one">
+    <input type="number" id="one" value="1">
     <label for="two">two</label>
 
-    <input type="number" id="two">
+    <input type="number" id="two" value="1">
     <label for="three">three</label>
 
-    <input type="number" id="three">
+    <input type="number" id="three" value="1">
     <label for="four">four</label>
 
-    <input type="number" id="four">
+    <input type="number" id="four" value="1">
     <label for="five">five</label>
 
-    <input type="number" id="five">
+    <input type="number" id="five" value="1">
     <button onclick="calculate()">计算</button>
     <label for="result">result</label>
     <input type="number" id="result">
@@ -40,66 +40,172 @@
 
 </body>
 <script rel="script">
+    Array.prototype.remove = function (val) {
+        var index = this.indexOf(val);
+        if (index > -1) {
+            this.splice(index, 1);
+        }
+    }
+
+    class Book {
+        constructor(category, number) {
+            this.category = category;
+            this.number = number;
+        }
+
+        toString() {
+            return '(' + this.category + ', ' + this.number + ')';
+        }
+    }
+
+    class SingleComposition {
+        constructor() {
+            this.categories = [];
+        }
+
+        addBookAndReduce(book) {
+            if (this.categories.indexOf(book.category) === -1 && book.number > 0) {
+                this.categories.push(book.category);
+                book.number--;
+                return true;
+            }
+            return false;
+        }
+
+        addBook(bookCategory) {
+            if (this.categories.indexOf(bookCategory) === -1) {
+                this.categories.push(bookCategory);
+                return true;
+            }
+            return false;
+        }
+
+        isEmpty() {
+            return this.categories.length === 0;
+        }
+
+        length() {
+            return this.categories.length;
+        }
+
+        contains(book) {
+            return this.categories.indexOf(book) !== -1
+        }
+
+        findDiff(composition) {
+            return this.categories.filter((v, i) => {
+                return !composition.contains(v);
+            })
+        }
+
+        remove(book) {
+            this.categories.remove(book);
+            return book;
+        }
+
+        getOne() {
+            if (!this.isEmpty()) {
+                return this.categories[0];
+            }
+            return null;
+        }
+
+        calculateSum() {
+            switch (this.categories.length) {
+                case 1:
+                    return this.categories.length * 8
+                case 2:
+                    return this.categories.length * 8 * 0.95
+                case 3:
+                    return this.categories.length * 8 * 0.9
+                case 4:
+                    return this.categories.length * 8 * 0.8
+                case 5:
+                    return this.categories.length * 8 * 0.75
+                default:
+                    return 0
+            }
+        }
+
+        toString() {
+            return this.categories.join(",");
+        }
+    }
+
     const calculate = () => {
         let one = document.getElementById('one').value
         let two = document.getElementById('two').value
         let three = document.getElementById('three').value
         let four = document.getElementById('four').value
         let five = document.getElementById('five').value
-        let list = []
-        list.push(~~one,~~two,~~three,~~four,~~five)
-        function filter (arr) {
-            return arr.filter(item => item>0).sort() // 排序和除0
-        }
-        filter(list)
-        list = filter(list)
-        const per = 8
-        let result = 0
-        let arr = []
-        var minArrList = []
-        getMinArr(list)
-        function getMinArr (arr) {
-            let min = Math.min.apply(null, arr) // 找到数组里的最小值
-            let minArr = []
-            let filteredArr = []
-            arr.forEach(i => {
-                minArr = new Array(arr.length).fill(min)
-                filteredArr.push(i-min)
-            })
-            filteredArr = filter(filteredArr)
-            if (filteredArr.length > 1) {
-                // getMinArr(filteredArr)
-                arguments.callee(filteredArr)
-            } else if (filteredArr.length === 1) {
-                minArrList.push(filteredArr)
+
+        var bookList = [new Book('A', one), new Book('B', two), new Book('C', three), new Book('D', four), new Book('E', five)];
+        var compositions = [];
+
+        function swapBookIfNecessary(last, composition) {
+            let total = last.calculateSum() + composition.calculateSum()
+            let diff = last.findDiff(composition);
+            let swap = last.remove(diff[0]);
+            composition.addBook(swap);
+            if ((last.calculateSum() + composition.calculateSum()) > total) {
+                last.addBook(swap)
+                composition.remove(swap)
             }
-            minArrList.push(minArr)
         }
-        console.log("minArrList: ",minArrList)
-        // 当length 小于5的情况
-        function sum(list) {
-           return list.reduce((accumulator, currentValue) => accumulator + currentValue)
+
+        function composite() {
+            // console.log(bookList.join(","))
+
+            var singleComposition = new SingleComposition();
+            for (let i in bookList) {
+                let book = bookList[i];
+                if (book.number > 0) {
+                    singleComposition.addBookAndReduce(book);
+                }
+            }
+            for (let j in bookList) {
+                let bookToRemove = bookList[j];
+                if (bookToRemove.number == 0) {
+                    bookList.remove(bookToRemove)
+                }
+            }
+            if (!singleComposition.isEmpty()) {
+                if (compositions.length > 0) {
+                    let last = compositions[compositions.length - 1];
+
+                    if (last.length() - singleComposition.length() > 1) {
+                        swapBookIfNecessary(last, singleComposition)
+                    }
+                    if (singleComposition.length() === 1 && compositions.length > 1) {
+                        let compositionOne = compositions[0];
+                        if (!compositionOne.contains(singleComposition.getOne())) {
+                            compositions[0].addBook(singleComposition.getOne());
+                            singleComposition = null
+                        }
+                    }
+                }
+                if (singleComposition != null) {
+                    compositions.push(singleComposition);
+                    // console.log(compositions.join(","))
+                }
+                compositions.sort(function (a, b) {
+                    return a.length() - b.length();
+                });
+            }
+            if (bookList.length > 0) {
+                composite();
+            }
         }
-        let sales
-        switch (list.length) {
-            case 0:
-                sales = 0
-                break
-            case 1:
-                sales= 1
-                break
-            case 2:
-                sales = 0.95
-                break
-            case 3:
-                sales = 0.9
-                break
-            case 4:
-                sales = 0.8
-                break
-        }
-        result = (sum(list) * per * sales).toFixed(2)
-        document.getElementById('result').value = result
+
+        composite();
+
+        console.log(compositions);
+        var sum = 0;
+        compositions.forEach((v, i) => {
+            sum += v.calculateSum()
+        })
+
+        document.getElementById('result').value = sum
     }
 
 </script>
