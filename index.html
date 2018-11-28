@@ -19,13 +19,13 @@
 <body>
 <div class="wrapper">
     <label for="one">one</label>
-    <input type="number" id="one" value="1">
+    <input type="number" id="one" value="2">
     <label for="two">two</label>
 
-    <input type="number" id="two" value="1">
+    <input type="number" id="two" value="2">
     <label for="three">three</label>
 
-    <input type="number" id="three" value="1">
+    <input type="number" id="three" value="2">
     <label for="four">four</label>
 
     <input type="number" id="four" value="1">
@@ -143,11 +143,11 @@
         var compositions = [];
 
         function swapBookIfNecessary(last, composition) {
-            let total = last.calculateSum() + composition.calculateSum()
-            let diff = last.findDiff(composition);
-            let swap = last.remove(diff[0]);
+            let total = last.calculateSum() + composition.calculateSum() //计算最后一个组合的总价
+            let diff = last.findDiff(composition); //找出最后一个组合里面可以被当前组合利用的书
+            let swap = last.remove(diff[0]); //从最后一个组合拿出这本书并放入当前组合
             composition.addBook(swap);
-            if ((last.calculateSum() + composition.calculateSum()) > total) {
+            if ((last.calculateSum() + composition.calculateSum()) > total) {//比较重新组合后的价格是否优于之前的组合，否则还原
                 last.addBook(swap)
                 composition.remove(swap)
             }
@@ -159,36 +159,33 @@
             var singleComposition = new SingleComposition();
             for (let i in bookList) {
                 let book = bookList[i];
-                if (book.number > 0) {
+                if (book.number > 0) { //从书堆里拿出某一分类的书放入组合并把这个分类减一，如果组合已经在此类书则跳过
                     singleComposition.addBookAndReduce(book);
                 }
-            }
-            for (let j in bookList) {
-                let bookToRemove = bookList[j];
-                if (bookToRemove.number == 0) {
-                    bookList.remove(bookToRemove)
+                if (book.number == 0) {//对书堆进行清理
+                    bookList.remove(book)
                 }
             }
             if (!singleComposition.isEmpty()) {
                 if (compositions.length > 0) {
-                    let last = compositions[compositions.length - 1];
+                    let last = compositions[compositions.length - 1]; //取出所有组合里最后一个组合（组合数组按组合长度从小到大排序）
 
-                    if (last.length() - singleComposition.length() > 1) {
+                    if (last.length() - singleComposition.length() > 1) { //如果最后组合的长度和当前组合的差距过大则重新组合
                         swapBookIfNecessary(last, singleComposition)
                     }
-                    if (singleComposition.length() === 1 && compositions.length > 1) {
+                    if (singleComposition.length() === 1 && compositions.length > 1) {//如果当前组合只有一本书
                         let compositionOne = compositions[0];
-                        if (!compositionOne.contains(singleComposition.getOne())) {
-                            compositions[0].addBook(singleComposition.getOne());
+                        if (!compositionOne.contains(singleComposition.getOne())) {//尝试把当前组合的书放入所有组合里面书的数量最少的一个组合（组合数组按组合长度从小到大排序）
+                            compositions[0].addBook(singleComposition.getOne()); //合并当前组合
                             singleComposition = null
                         }
                     }
                 }
-                if (singleComposition != null) {
+                if (singleComposition != null) { //如果当前组合没有和所有组合里面书的数量最少的一个组合合并
                     compositions.push(singleComposition);
                     // console.log(compositions.join(","))
                 }
-                compositions.sort(function (a, b) {
+                compositions.sort(function (a, b) {//组合数组按组合长度从小到大排序
                     return a.length() - b.length();
                 });
             }
@@ -199,7 +196,7 @@
 
         composite();
 
-        console.log(compositions);
+        console.log(compositions); //这就是最优的组合
         var sum = 0;
         compositions.forEach((v, i) => {
             sum += v.calculateSum()
