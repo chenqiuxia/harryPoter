@@ -154,7 +154,6 @@
         }
 
         function composite() {
-            // console.log(bookList.join(","))
 
             var singleComposition = new SingleComposition();
             for (let i in bookList) {
@@ -163,16 +162,11 @@
                     singleComposition.addBookAndReduce(book);
                 }
             }
-            for (let j in bookList) {
-                let bookToRemove = bookList[j];
-                if (bookToRemove.number == 0) {
-                    bookList.remove(bookToRemove)
-                }
-            }
+            bookList = bookList.filter(value => value.number) // 这里把number为0的剔除掉
+
             if (!singleComposition.isEmpty()) {
                 if (compositions.length > 0) {
                     let last = compositions[compositions.length - 1]; //取出所有组合里最后一个组合（组合数组按组合长度从小到大排序）
-
                     if (last.length() - singleComposition.length() > 1) { //如果最后组合的长度和当前组合的差距过大则重新组合
                         swapBookIfNecessary(last, singleComposition)
                     }
@@ -186,27 +180,27 @@
                 }
                 if (singleComposition != null) { //如果当前组合没有和所有组合里面书的数量最少的一个组合合并
                     compositions.push(singleComposition);
-                    // console.log(compositions.join(","))
                 }
                 compositions.sort(function (a, b) {//组合数组按组合长度从小到大排序
                     return a.length() - b.length();
                 });
             }
-            if (bookList.length > 0) {
-                composite();
-            }
         }
 
-        composite();
+        while (bookList.length > 0) {
+            composite(); // for 循环比递归好，递归会造成堆栈溢出。占用内存
+        }
 
         console.log(compositions); //这就是最优的组合
         var sum = 0;
-        compositions.forEach((v, i) => {
+        compositions.forEach((v) => {
             sum += v.calculateSum()
         })
 
         document.getElementById('result').value = sum
     }
 
+    // 总结：category承载的是每次的组合。compositions承载的是所有的组合（就是category的集合）。
+    // 思路是：把每一次的组合和compositions最后一项比较，然后有必要的话再去交换里面的种类。（因为是按照从小到大排序的）
 </script>
 </html>
