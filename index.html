@@ -162,8 +162,11 @@
                 if (book.number > 0) { //从书堆里拿出某一分类的书放入组合并把这个分类减一，如果组合已经在此类书则跳过
                     singleComposition.addBookAndReduce(book);
                 }
-                if (book.number == 0) {//对书堆进行清理
-                    bookList.remove(book)
+            }
+            for (let j in bookList) {
+                let bookToRemove = bookList[j];
+                if (bookToRemove.number == 0) {
+                    bookList.remove(bookToRemove)
                 }
             }
             if (!singleComposition.isEmpty()) {
